@@ -2,13 +2,21 @@ package com.example.board.service;
 
 import com.example.board.dto.BoardRequestDto;
 import com.example.board.dto.BoardResponseDto;
-import com.example.board.dto.DeleteBoardDto;
+import com.example.board.dto.BoardSpecificResponseDto;
+import com.example.board.dto.ResponseDto;
 import com.example.board.entity.Board;
+import com.example.board.entity.UserRoleEnum;
+import com.example.board.entity.Users;
+import com.example.board.exception.CustomException;
+import com.example.board.exception.ErrorCodes;
+import com.example.board.exception.SuccessCode;
+import com.example.board.jwt.JwtUtil;
 import com.example.board.repository.BoardRepository;
+import com.example.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.lang.NullPointerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +25,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final BoardRepository boardRepository;                 // 싱글톤이어야하기 때문!
+    private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+    private final Users users;
 
     @Transactional
-    public BoardResponseDto saveBoard(BoardRequestDto boardRequestDto) {
-        Board board = new Board(boardRequestDto);       //데이터베이스에 연결해서 저장하려면 @Entity어노테이션이 걸려져있는 Board클래스를 인스턴스로 만들어서 그 값을사용해서 저장해야 함. 그렇기때문에 board 객체를 만들어주고 생성자를 사용해서 값들을 넣어줘야 함.
+    public BoardResponseDto saveBoard(BoardRequestDto boardRequestDto, Users user) {
+        Board board = new Board(boardRequestDto, user);
         boardRepository.save(board);
         return new BoardResponseDto(board);
 
@@ -46,31 +57,32 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDto putBoard(Long id, BoardRequestDto boardRequestDto) {
-        Board board = boardRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 글입니다")
-        );
-        BoardResponseDto boardResponseDto = new BoardResponseDto(board);
-
-        if (boardRequestDto.getPassword().equals(board.getPassword())) {
+    public BoardSpecificResponseDto putBoard(Long id, BoardRequestDto boardRequestDto, Users user) {
+        Board board;
+        if (user.getRole().equals(UserRoleEnum.ADMIN)) {
+            board = boardRepository.findById(id).orElseThrow(()-> new CustomException(ErrorCodes.ALREADY_EXIST_USERNAME));
             board.update(boardRequestDto);
-            return boardResponseDto;
         } else {
-            return boardResponseDto;
+            board = boardRepository.findByIdAndUserId(id, user.getId()).orElseThrow(()->new CustomException(ErrorCodes.NO_POST_FOUND));
+            board.update(boardRequestDto);
         }
+        return new BoardSpecificResponseDto(board);
     }
 
-    public DeleteBoardDto deleteBoard(Long id, BoardRequestDto boardRequestDto) {
-        Board board = boardRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 글입니다")
+    @Transactional
+    public ResponseDto deleteBoard(Long id, Users user) {
+        Board board;
+        board = boardRepository.findById(id).orElseThrow(
+                () -> new NullPointerException(" ")
         );
-        DeleteBoardDto deleteBoardDto = new DeleteBoardDto();
-        if (boardRequestDto.getPassword().equals(board.getPassword())) {
-            boardRepository.deleteById(id);
-            deleteBoardDto.setMsg("success");
-        } else {
-            deleteBoardDto.setMsg("fail");
-        }
-        return deleteBoardDto;
+        boardRepository.delete(board);
+//        if (user.getRole().equals(UserRoleEnum.ADMIN)) {
+//            board = boardRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCodes.NO_POST_FOUND));
+//            boardRepository.delete(board);
+//        } else {
+//            board = boardRepository.findByIdAndUserId(id, user.getId()).orElseThrow(() -> new CustomException(ErrorCodes.NO_DELETE_POST));
+//            boardRepository.delete(board);
+//        }
+        return new ResponseDto(SuccessCode.DELETE_POST);
     }
 }

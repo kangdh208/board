@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.*;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -11,25 +13,28 @@ public class Board extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String username;
+
     @Column(nullable = false)
     private String title;
+
     @Column(nullable = false)
     private String content;
-    @Column(nullable = false)
-    private String author;
-    private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
 
-    //생성자
-    public Board(BoardRequestDto boardRequestDto){
-        this.author=boardRequestDto.getAuthor();
+    public Board(BoardRequestDto boardRequestDto, Users user){
         this.title=boardRequestDto.getTitle();
         this.content=boardRequestDto.getContent();
-        this.password=boardRequestDto.getPassword();
+        this.username=user.getUsername();
+        this.user = user;
     }
 
     public void update(BoardRequestDto boardRequestDto) {
-        this.author = boardRequestDto.getAuthor();
         this.content = boardRequestDto.getContent();
         this.title = boardRequestDto.getTitle();
     }

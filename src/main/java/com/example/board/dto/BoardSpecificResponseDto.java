@@ -2,23 +2,21 @@ package com.example.board.dto;
 
 import com.example.board.entity.Board;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@NoArgsConstructor
-public class BoardResponseDto {
+public class BoardSpecificResponseDto {
     private Long id;
     private String title;
     private String content;
     private LocalDateTime createdat;
     private LocalDateTime modifiedat;
     private String username;
-
+    private int postLikeCnt;
 
     //생성자
-    public BoardResponseDto(Board board) {
+    public BoardSpecificResponseDto(Board board){
         this.id = board.getId();
         this.title = board.getTitle();
         this.content = board.getContent();
