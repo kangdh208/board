@@ -10,20 +10,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BoardResponseDto {
     private Long id;
+    private String username;
     private String title;
     private String content;
-    private LocalDateTime createdat;
-    private LocalDateTime modifiedat;
-    private String username;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
 
     //생성자
     public BoardResponseDto(Board board) {
         this.id = board.getId();
+        this.username = board.getUsername();
         this.title = board.getTitle();
         this.content = board.getContent();
-        this.createdat = board.getCreatedAt();
-        this.modifiedat = board.getModifiedAt();
-        this.username = board.getUsername();
+        this.createdAt = board.getCreatedAt();
+        this.modifiedAt = board.getModifiedAt();
     }
 }

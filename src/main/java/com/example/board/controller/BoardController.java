@@ -2,51 +2,45 @@ package com.example.board.controller;
 
 import com.example.board.dto.BoardResponseDto;
 import com.example.board.dto.BoardRequestDto;
-import com.example.board.dto.BoardSpecificResponseDto;
-import com.example.board.dto.ResponseDto;
-import com.example.board.security.UserDetailsImpl;
 import com.example.board.service.BoardService;
-import com.example.board.exception.ErrorCodes;
-import com.example.board.exception.CustomException;
-import com.example.board.exception.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/post")
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
 
     // 포스팅하기
-    @PostMapping("/posts")
-    public BoardResponseDto saveBoard(@RequestBody BoardRequestDto boardRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-        return boardService.saveBoard(boardRequestDto, userDetailsImpl.getUser());
+    @PostMapping("/")
+    public BoardResponseDto saveBoard(@RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        return boardService.saveBoard(boardRequestDto, request);
     }
 
     // 모든 포스팅가져오기
-    @GetMapping("/posts")
+    @GetMapping("/")
     public List<BoardResponseDto> getBoards() {
         return boardService.getBoards();
     }
 
     // 포스팅 하나만 상세조회
-    @GetMapping("/posts/{id}")
+    @GetMapping("/{id}")
     public BoardResponseDto getBoard(@PathVariable Long id) {
         return boardService.getBoard(id);
     }
 
     // 포스팅 수정
-    @PutMapping("/posts/{id}")
-    public BoardSpecificResponseDto putBoard(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-        return boardService.putBoard(id, boardRequestDto, userDetailsImpl.getUser());
+    @PutMapping("/{id}")
+    public BoardResponseDto putBoard(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        return boardService.putBoard(id, boardRequestDto, request);
     }
 
     // 포스팅 삭제하기
-    @DeleteMapping("/posts/{id}")
-    public ResponseDto deleteBoard(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
-        return boardService.deleteBoard(id, userDetailsImpl.getUser());
+    @DeleteMapping("/{id}")
+    public String deleteBoard(@PathVariable Long id, HttpServletRequest request){
+        return boardService.deleteBoard(id, request);
     }
 }

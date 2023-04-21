@@ -4,16 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
-
 @Entity
 @Getter
 @NoArgsConstructor
 public class Board extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_id")
     private Long id;
-
     @Column(nullable = false)
     private String username;
 
