@@ -8,8 +8,8 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(name="users")
-public class Users {
+@Entity(name="user")
+public class User {
 
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -22,9 +22,14 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
-    public Users(String username, String password) {
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 }
 

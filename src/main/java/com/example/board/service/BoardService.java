@@ -3,7 +3,8 @@ package com.example.board.service;
 import com.example.board.dto.BoardRequestDto;
 import com.example.board.dto.BoardResponseDto;
 import com.example.board.entity.Board;
-import com.example.board.entity.Users;
+import com.example.board.entity.UserRoleEnum;
+import com.example.board.entity.User;
 import com.example.board.jwt.JwtUtil;
 import com.example.board.repository.BoardRepository;
 import com.example.board.repository.UserRepository;
@@ -38,7 +39,7 @@ public class BoardService {
                 throw new IllegalArgumentException("Token Error");
             }
 
-            Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
+            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
@@ -75,7 +76,7 @@ public class BoardService {
             } else {
                 throw new IllegalArgumentException("Token Error");
             }
-            Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
+            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
             Board board = boardRepository.findById(id).orElseThrow(
@@ -93,29 +94,16 @@ public class BoardService {
     }
     // 글 삭제
     @Transactional
-    public String deleteBoard(Long id, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if (token != null) {
-            if (jwtUtil.validateToken(token)) {
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new IllegalArgumentException("Token Error");
-            }
-            Users user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-            );
-            Board board = boardRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
-            );
-            if(user.getUsername().equals(board.getUsername())) {
-                boardRepository.deleteById(id);
-                return "삭제 성공했습니다.";
-            } else {
-                throw new IllegalArgumentException("작성자만 수정, 삭제 가능합니다.");
-            }
+    public String deleteBoard(Long id, User user) {
+        Board board;
+        if (user.getRole().equals(UserRoleEnum.ADMIN)) {
+            board = boardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ERROR_CODES:NO_POST_FOUND"));
+            boardRepository.delete(board);
         } else {
-            return "비밀번호가 틀립니다.";
+            board = boardRepository.findById(id).orElseThrow(()->new IllegalArgumentException("ERROR_CODE:NO_DELETE_POST"));
+            boardRepository.delete(board);
         }
+
+        return "게시물 삭제";
     }
 }

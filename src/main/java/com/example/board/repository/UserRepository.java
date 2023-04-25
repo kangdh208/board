@@ -1,12 +1,9 @@
 package com.example.board.repository;
 
-import com.example.board.entity.Users;
+import com.example.board.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.*;
-public interface UserRepository extends JpaRepository<Users, Long> {
-    Optional<Users> findByUseridAndPassword(String userid, String password);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
 
-    Optional<Users> findByUsername(String username);
-
-    public Boolean existsByUserid(String userid);
 }

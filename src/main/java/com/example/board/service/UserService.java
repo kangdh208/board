@@ -2,7 +2,8 @@ package com.example.board.service;
 
 import com.example.board.dto.LoginRequestDto;
 import com.example.board.dto.SignupRequestDto;
-import com.example.board.entity.Users;
+import com.example.board.entity.UserRoleEnum;
+import com.example.board.entity.User;
 import com.example.board.jwt.JwtUtil;
 import com.example.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
+    // ADMIN TOKEN
+    private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
     //회원가입 기능
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
@@ -26,11 +30,21 @@ public class UserService {
         String password = signupRequestDto.getPassword();
 
         // 회원 중복 확인
-        Optional<Users> found = userRepository.findByUsername(username);
+        Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
             throw new IllegalArgumentException("ErrorCodes.ALREADY_EXIST_USERNAME");
         }
-        Users user = new Users(username, password);
+
+        // 사용자 직책 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (signupRequestDto.isAdmin()) {
+            if(!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
+                throw new IllegalArgumentException("ErrorCodes.DISMATCH_ADMIN_TOKEN");
+            }
+            role = UserRoleEnum.ADMIN;
+        }
+
+        User user = new User(username, password);
         userRepository.save(user);
         return "SuccessCode.SIGN_UP";
     }
@@ -42,7 +56,7 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         // 사용자 확인
-        Users user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("ErrorCodes.NO_EXIST_USER"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("ErrorCodes.NO_EXIST_USER"));
 
         // 비밀번호 확인
         if(!user.getPassword().equals(password)){

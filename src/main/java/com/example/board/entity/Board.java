@@ -23,9 +23,9 @@ public class Board extends TimeStamped {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
-    public Board(BoardRequestDto boardRequestDto, Users user){
+    public Board(BoardRequestDto boardRequestDto, User user){
         this.title=boardRequestDto.getTitle();
         this.content=boardRequestDto.getContent();
         this.username=user.getUsername();

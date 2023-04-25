@@ -2,6 +2,7 @@ package com.example.board.controller;
 
 import com.example.board.dto.BoardResponseDto;
 import com.example.board.dto.BoardRequestDto;
+import com.example.board.entity.User;
 import com.example.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,6 @@ public class BoardController {
     // 포스팅 삭제하기
     @DeleteMapping("/{id}")
     public String deleteBoard(@PathVariable Long id, HttpServletRequest request){
-        return boardService.deleteBoard(id, request);
+        return boardService.deleteBoard(id, (User) request);
     }
 }
