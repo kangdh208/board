@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -36,4 +39,7 @@ public class Board extends TimeStamped {
         this.content = boardRequestDto.getContent();
         this.title = boardRequestDto.getTitle();
     }
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Comment> commentList= new ArrayList<>();
 }
