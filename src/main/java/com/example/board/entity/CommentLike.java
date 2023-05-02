@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "comment_id", nullable = false)

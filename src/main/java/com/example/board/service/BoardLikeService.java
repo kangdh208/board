@@ -9,8 +9,10 @@ import com.example.board.exception.ErrorCode;
 import com.example.board.exception.SuccessCode;
 import com.example.board.repository.BoardLikeRepository;
 import com.example.board.repository.BoardRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class BoardLikeService {
     private final BoardLikeRepository boardLikeRepository;
     private final BoardRepository boardRepository;
@@ -24,11 +26,11 @@ public class BoardLikeService {
     public ResponseDto boardLike(Long id, User user) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NO_POST_FOUND));
 
-        if (boardLikeRepository.findByUserIdAndPostId(user.getId(), board.getId()).isEmpty()) {
+        if (boardLikeRepository.findByUserIdAndBoardId(user.getId(), board.getId()).isEmpty()) {
             boardLikeRepository.save(new BoardLike(board, user));
             return new ResponseDto(SuccessCode.LIKE);
         } else {
-            boardLikeRepository.deleteByUserIdAndPostId(user.getId(), board.getId());
+            boardLikeRepository.deleteByUserIdAndBoardId(user.getId(), board.getId());
             return new ResponseDto(SuccessCode.CANCEL_LIKE);
         }
     }

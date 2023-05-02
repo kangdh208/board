@@ -12,6 +12,7 @@ import com.example.board.jwt.JwtUtil;
 import com.example.board.repository.BoardRepository;
 import com.example.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,11 @@ import java.util.List;
 
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
-    private final User user;
+
     // 글 등록
     public BoardResponseDto saveBoard(BoardRequestDto boardRequestDto, User user) {
         Board board = boardRepository.save(new Board(boardRequestDto, user));        //데이터베이스에 연결해서 저장하려면 @Entity어노테이션이 걸려져있는 Post클래스를 인스턴스로 만들어서 그 값을사용해서 저장해야 함. 그렇기때문에 board 객체를 만들어주고 생성자를 사용해서 값들을 넣어줘야 함.

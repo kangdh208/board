@@ -41,7 +41,7 @@ public class Board extends TimeStamped {
         this.title = boardRequestDto.getTitle();
     }
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
     private List<Comment> commentList= new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
