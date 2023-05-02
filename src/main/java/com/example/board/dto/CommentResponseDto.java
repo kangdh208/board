@@ -14,6 +14,7 @@ public class CommentResponseDto {
     private String comment;
     private LocalDateTime modifiedat;
     private LocalDateTime createdat;
+    private int commentLikeCnt;
 
     //생성자
     public CommentResponseDto(Comment comment) {
@@ -23,5 +24,6 @@ public class CommentResponseDto {
         this.comment = comment.getComment();
         this.modifiedat = comment.getBoard().getModifiedAt();
         this.createdat = comment.getBoard().getCreatedAt();
+        this.commentLikeCnt = comment.getCommentLikes().size();
     }
 }

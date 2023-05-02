@@ -15,6 +15,7 @@ public class BoardResponseDto {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int boardLikeCnt;
 
 
     //생성자
@@ -25,5 +26,6 @@ public class BoardResponseDto {
         this.content = board.getContent();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
+        this.boardLikeCnt = board.getBoardLikes().size();
     }
 }
